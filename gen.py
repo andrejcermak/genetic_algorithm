@@ -9,15 +9,15 @@ body=[]
 lines = []
 pocitadlo=0
 
-def shortest_path(places):
+def shortest_path():
     global lines
-    population = create_population(places, 5*places)
-    lenghts = []
+    population = create_population(poc, population_size)
     # trans_prob = 0.6
-    mutation_prob = 0.02
+    # mutation_prob = 0.05
     has_not_changed_for = 0
     global_min = [100000000000000000,[]]
-    for j in range(200000):
+    start_time = time.time()
+    for j in range(10000):
         lenghts = []
         # print j
         for i in range(len(population)):
@@ -35,13 +35,13 @@ def shortest_path(places):
             lines = []
         else:
             has_not_changed_for +=1
-        if has_not_changed_for > 80000:
+        if has_not_changed_for > 1000:
             break
-        if j%10000==0:
+        if j%1000==0:
             print j
         population = new_gen(population, lenghts,mutation_prob)
 
-    print "end", global_min[0]
+    print "end", global_min[0], time.time()-start_time
     draw_solution(global_min[1])
 
     # lenghts = sorted(lenghts, key = lambda x: x[0])
@@ -109,7 +109,7 @@ def mutate(solution,mutation_prob):
 def fitness(solution):
     distance = 0
     for i in range(0,len(solution)-1):
-        distance += abs((bodx[solution[i]]-bodx[solution[i + 1]])**2 - (body[solution[i]] - body[solution[i + 1]])**2)
+        distance += ((bodx[int(solution[i])]-bodx[int(solution[i+1])])**2 + (body[int(solution[i])] - body[int(solution[i+1])])**2)**0.5
     # print distance
     return distance
 
@@ -124,8 +124,10 @@ def create_population(size, population_size):
 
 
 def input_points():
-    global poc
+    global poc, population_size, mutation_prob
     poc = int(e.get())
+    mutation_prob = float(e1.get())
+    population_size = int(e2.get())
     canvas.bind("<Button-1>", funkcia)
     canvas.pack()
     root.update()
@@ -136,7 +138,7 @@ def draw_solution(solution):
     print solution
     global bodx,body, lines
     for i in range(len(solution)-1):
-        lines.append(canvas.create_line(bodx[solution[i]], body[solution[i]], bodx[solution[i+1]], body[solution[i+1]]))
+        lines.append(canvas.create_line(bodx[int(solution[i])], body[int(solution[i])], bodx[int(solution[i+1])], body[int(solution[i+1])]))
 
     canvas.pack()
     root.update()
@@ -168,13 +170,13 @@ def funkcia(event):
         else:
             a=canvas.create_oval(x-5,y-5,x+5,y+5)
             if(pocitadlo==poc):
-                # tazisko()
-                #create_population(poc,15)
-                shortest_path(poc)
+                shortest_path()
                 return 0
 def from_input():
-    print e1.get()
-    draw_solution(list(e1.get()))
+    print e3.get()
+    input = list(e3.get())
+    print fitness(input)
+    draw_solution(input)
 
 def erase_lines():
     global lines
@@ -183,13 +185,17 @@ def erase_lines():
     lines = []
 topFrame = Frame(root)
 
-button=Button(topFrame, text="Najkratsia cesta", command=input_points)
-button2=Button(topFrame, text="Vymaz", command=vymaz)
+button=Button(topFrame, text="Shortest path", command=input_points)
+button2=Button(topFrame, text="Delete", command=vymaz)
 button3=Button(topFrame, text="Draw", command=from_input)
 button4=Button(topFrame, text="Erase lines", command=erase_lines)
+button5=Button(topFrame, text="Restart, keep points", command=shortest_path)
 
 e = Entry(topFrame)
 e1 = Entry(topFrame)
+e2 = Entry(topFrame)
+e3 = Entry(topFrame)
+
 topFrame.pack(side=LEFT)
 #label1 = Label(root, text= "Name")
 #label1.pack()
@@ -198,10 +204,32 @@ button.pack()
 button2.pack()
 button3.pack()
 button4.pack()
+button5.pack()
 
 
+labelText=StringVar()
+labelText.set("Number of towns")
+labelDir=Label(topFrame, textvariable=labelText)
+labelDir.pack()
 e.pack()
-e1.pack
+
+labelText1=StringVar()
+labelText1.set("Mutation Prob")
+labelDir1=Label(topFrame, textvariable=labelText1)
+labelDir1.pack()
+e1.pack()
+
+labelText2=StringVar()
+labelText2.set("Population size")
+labelDir2=Label(topFrame, textvariable=labelText2)
+labelDir2.pack()
+e2.pack()
+
+labelText3=StringVar()
+labelText3.set("From input")
+labelDir3=Label(topFrame, textvariable=labelText3)
+labelDir3.pack()
+e3.pack()
 
 canvas.pack()
 root.update()
