@@ -165,18 +165,18 @@ def funkcia(event):
         bodx.append(x)
         body.append(y)
         pocitadlo=pocitadlo+1
-        if(pocitadlo==1):
-            a=canvas.create_oval(x-5,y-5,x+5,y+5)
-        else:
-            a=canvas.create_oval(x-5,y-5,x+5,y+5)
+        canvas.create_text(x, y+15, text=str(pocitadlo-1), tags="text")
+        canvas.create_oval(x - 5, y - 5, x + 5, y + 5)
+        if pocitadlo!=1:
             if(pocitadlo==poc):
                 shortest_path()
                 return 0
 def from_input():
-    print e3.get()
-    input = list(e3.get())
-    print fitness(input)
-    draw_solution(input)
+    input = str(e3.get())
+    l = input.split(',')
+    print l
+    print fitness(l)
+    draw_solution(l)
 
 def erase_lines():
     global lines
